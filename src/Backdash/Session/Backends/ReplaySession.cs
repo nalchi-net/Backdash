@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using Backdash.Core;
 using Backdash.Network;
 using Backdash.Options;
@@ -124,14 +123,14 @@ sealed class ReplaySession<TInput> : INetcodeSession<TInput> where TInput : unma
         return ResultCode.NotSupported;
     }
 
-    public ResultCode AddRemotePlayer(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddRemotePlayer(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;
     }
 
 #pragma warning disable S4144
-    public ResultCode AddSpectator(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddSpectator(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;

@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Backdash.Core;
@@ -63,7 +62,6 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.LocalPort);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.FramesPerSecond);
 
         this.options = options;
@@ -218,7 +216,7 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
     }
 
     ///  <inheritdoc />
-    public ResultCode AddRemotePlayer(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddRemotePlayer(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         handle = default;
@@ -241,14 +239,14 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
         endpoints.Add(protocol);
         IncrementInputBufferSize();
         synchronizer.AddQueue(handle);
-        logger.Write(LogLevel.Information, $"Adding {handle} at {endpoint}");
+        logger.Write(LogLevel.Information, $"Adding {handle} at {endpoint.ToString()}");
         protocol.Synchronize();
         isSynchronizing = true;
         return ResultCode.Ok;
     }
 
     ///  <inheritdoc />
-    public ResultCode AddSpectator(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddSpectator(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         handle = default;
@@ -274,7 +272,7 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
         );
         peerObservers.Add(protocol.GetUdpObserver());
         spectators.Add(protocol);
-        logger.Write(LogLevel.Information, $"Adding {handle} at {endpoint}");
+        logger.Write(LogLevel.Information, $"Adding {handle} at {endpoint.ToString()}");
         protocol.Synchronize();
 
         return ResultCode.Ok;

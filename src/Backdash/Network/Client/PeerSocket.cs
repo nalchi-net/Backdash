@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using Backdash.Options;
+using GnsSharp;
 
 namespace Backdash.Network.Client;
 
@@ -56,5 +57,11 @@ public interface IPeerSocketFactory
 
 sealed class PeerSocketFactory : IPeerSocketFactory
 {
-    public IPeerSocket Create(int port, NetcodeOptions options) => new UdpSocket(port, options.UseIPv6);
+    public IPeerSocket Create(int port, NetcodeOptions options)
+    {
+        if (ISteamNetworkingMessages.User == null)
+            throw new InvalidOperationException("ISteamNetworkingMessages.User is null. Call SteamAPI.Init() or SteamAPI.InitEx() beforehand.");
+
+        return new SteamSocket(port, ISteamNetworkingMessages.User);
+    }
 }

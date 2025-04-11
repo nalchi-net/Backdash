@@ -19,4 +19,8 @@
     <InternalsVisibleTo Include="$(AssemblyName).Benchmarks"/>
     <InternalsVisibleTo Include="$(AssemblyName).Benchmarks.Ping"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GnsSharp.Steamworks.Win64" Version="0.1.0-alpha.11"/>
+  </ItemGroup>
 </Project>

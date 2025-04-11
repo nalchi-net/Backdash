@@ -1,4 +1,5 @@
-using System.Net;
+using Backdash.Network;
+using GnsSharp;
 
 namespace Backdash.Options;
 
@@ -8,23 +9,22 @@ namespace Backdash.Options;
 public sealed record SpectatorOptions
 {
     /// <summary>
-    ///     Host endpoint IP Address
+    ///     Host endpoint <see cref="SteamNetworkingIdentity" />.
     /// </summary>
-    /// <value>Defaults to <see cref="IPAddress.Loopback" /> </value>
-    public IPAddress HostAddress { get; set; } = IPAddress.Loopback;
+    public SteamNetworkingIdentity HostAddress { get; set; }
 
     /// <summary>
     ///     Host endpoint port
     /// </summary>
-    /// <value>Defaults to 9000</value>
-    public int HostPort { get; set; } = 9000;
+    /// <value>Defaults to 0</value>
+    public int HostPort { get; set; } = 0;
 
     /// <summary>
     ///     Host IP endpoint
     /// </summary>
-    public IPEndPoint HostEndPoint
+    public SteamEndPoint HostEndPoint
     {
         get => new(HostAddress, HostPort);
-        set => (HostAddress, HostPort) = (value.Address, value.Port);
+        set => (HostAddress, HostPort) = (value.Identity, value.Channel);
     }
 }

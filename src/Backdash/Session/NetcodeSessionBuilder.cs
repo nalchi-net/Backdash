@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Backdash.Backends;
@@ -103,7 +102,7 @@ public sealed class NetcodeSessionBuilder<TInput> where TInput : unmanaged
     /// <summary>
     ///     Set the <see cref="SessionMode" /> as <see cref="SessionMode.Spectator" />.
     /// </summary>
-    public NetcodeSessionBuilder<TInput> ForSpectator(IPEndPoint hostEndpoint) =>
+    public NetcodeSessionBuilder<TInput> ForSpectator(SteamEndPoint hostEndpoint) =>
         ConfigureSpectator(options => options.HostEndPoint = hostEndpoint);
 
     /// <summary>

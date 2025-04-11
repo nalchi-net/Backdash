@@ -1,6 +1,6 @@
-using System.Net;
 using System.Numerics;
 using Backdash.Core;
+using Backdash.Network;
 
 namespace Backdash;
 
@@ -15,7 +15,7 @@ public class NetcodePlayer : IEquatable<NetcodePlayer>, IEqualityOperators<Netco
     /// <summary>
     /// Initializes a new netcode player
     /// </summary>
-    public NetcodePlayer(PlayerType type, IPEndPoint? endPoint = null)
+    public NetcodePlayer(PlayerType type, SteamEndPoint? endPoint = null)
     {
         ThrowIf.InvalidEnum(type);
 
@@ -27,9 +27,9 @@ public class NetcodePlayer : IEquatable<NetcodePlayer>, IEqualityOperators<Netco
     }
 
     /// <summary>
-    ///     Holds data for a  player IP Endpoint
+    ///     Holds data for a player Endpoint
     /// </summary>
-    public IPEndPoint? EndPoint { get; }
+    public SteamEndPoint? EndPoint { get; }
 
     /// <summary>
     ///     Player handler, used to identify any player in session.
@@ -84,10 +84,10 @@ public class NetcodePlayer : IEquatable<NetcodePlayer>, IEqualityOperators<Netco
     /// <summary>
     ///   Create new <see cref="NetcodePlayer"/> of type <see cref="PlayerType.Remote"/>
     /// </summary>
-    public static NetcodePlayer CreateRemote(IPEndPoint endPoint) => new(PlayerType.Remote, endPoint);
+    public static NetcodePlayer CreateRemote(SteamEndPoint endPoint) => new(PlayerType.Remote, endPoint);
 
     /// <summary>
     ///   Create new <see cref="NetcodePlayer"/> of type <see cref="PlayerType.Spectator"/>
     /// </summary>
-    public static NetcodePlayer CreateSpectator(IPEndPoint endPoint) => new(PlayerType.Spectator, endPoint);
+    public static NetcodePlayer CreateSpectator(SteamEndPoint endPoint) => new(PlayerType.Spectator, endPoint);
 }

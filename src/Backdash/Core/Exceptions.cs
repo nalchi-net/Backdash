@@ -1,3 +1,5 @@
+using GnsSharp;
+
 namespace Backdash.Core;
 
 /// <summary>
@@ -74,4 +76,16 @@ public sealed class InvalidTypeArgumentException<T> : InvalidTypeArgumentExcepti
 {
     internal InvalidTypeArgumentException() : base(typeof(T)) { }
     internal InvalidTypeArgumentException(string message) : base(typeof(T), message) { }
+}
+
+/// <summary>
+///     An exception that is thrown for <see cref="GnsSharp.EResult"/>.
+/// </summary>
+[Serializable]
+public class GnsEResultException : Exception
+{
+    EResult result;
+
+    internal GnsEResultException(EResult result) : base($"EResult.{result}") => this.result = result;
+    internal GnsEResultException(EResult result, string message) : base($"EResult.{result}: {message}") => this.result = result;
 }

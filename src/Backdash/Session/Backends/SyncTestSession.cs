@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using Backdash.Core;
 using Backdash.Network;
 using Backdash.Options;
@@ -161,13 +160,13 @@ sealed class SyncTestSession<TInput> : INetcodeSession<TInput>
         return ResultCode.Ok;
     }
 
-    public ResultCode AddRemotePlayer(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddRemotePlayer(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;
     }
 
-    public ResultCode AddSpectator(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddSpectator(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = new(PlayerType.Spectator);
 

@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Backdash.Core;
@@ -111,14 +110,14 @@ sealed class LocalSession<TInput> : INetcodeSession<TInput> where TInput : unman
         return ResultCode.Ok;
     }
 
-    public ResultCode AddRemotePlayer(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddRemotePlayer(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;
     }
 
 #pragma warning disable S4144
-    public ResultCode AddSpectator(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddSpectator(SteamEndPoint endpoint, out PlayerHandle handle)
 #pragma warning restore S4144
     {
         handle = default;

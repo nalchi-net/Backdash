@@ -1,9 +1,62 @@
 // ReSharper disable AccessToDisposedClosure, UnusedVariable
 
-using System.Net;
 using Backdash;
 using Backdash.Core;
+using Backdash.Network;
 using ConsoleGame;
+using GnsSharp;
+
+const int Channel = 0;
+
+Environment.SetEnvironmentVariable("SteamAppId", "480");
+Environment.SetEnvironmentVariable("SteamGameId", "480");
+
+if (SteamAPI.InitEx(out string? errMsg) != ESteamAPIInitResult.OK)
+{
+    Console.WriteLine(errMsg!);
+    return 1;
+}
+
+FnSteamNetworkingMessagesSessionRequest reqFunc = (ref SteamNetworkingMessagesSessionRequest_t req) =>
+{
+    ISteamNetworkingMessages.User!.AcceptSessionWithUser(req.IdentityRemote);
+};
+
+if (!ISteamNetworkingUtils.User!.SetGlobalCallback_MessagesSessionRequest(reqFunc))
+{
+    Console.WriteLine("SetGlobalCallback_MessagesSessionRequest failed");
+    return 1;
+}
+
+// Run callbacks as a seperate task
+using CancellationTokenSource cancelTokenSrc = new();
+CancellationToken cancelToken = cancelTokenSrc.Token;
+Task callbackRunner = Task.Run(async () =>
+    {
+        while (!cancelToken.IsCancellationRequested)
+        {
+            SteamAPI.RunCallbacks();
+            await Task.Delay(10, cancelToken);
+        }
+    }, cancelToken);
+
+// Wait for steam auth
+ISteamNetworkingUtils.User!.InitRelayNetworkAccess();
+while (true)
+{
+    ESteamNetworkingAvailability avail =
+    ISteamNetworkingSockets.User!.GetAuthenticationStatus(out SteamNetAuthenticationStatus_t auth);
+
+    if (avail == ESteamNetworkingAvailability.Current)
+        break;
+    else if (!(avail == ESteamNetworkingAvailability.Waiting || avail == ESteamNetworkingAvailability.Attempting || avail == ESteamNetworkingAvailability.Retrying))
+    {
+        Console.WriteLine($"ESteamNetworkingAvailability.{avail} : Re-init...");
+        ISteamNetworkingUtils.User!.InitRelayNetworkAccess();
+    }
+
+    await Task.Delay(10);
+}
 
 var frameDuration = FrameSpan.GetDuration(1);
 using CancellationTokenSource cts = new();
@@ -28,7 +81,7 @@ if (args is not [{ } portArg, { } playerCountArg, .. { } endpoints]
 // create rollback session builder
 var builder = RollbackNetcode
     .WithInputType<GameInput>()
-    .WithPort(port)
+    .WithPort(Channel)
     .WithPlayerCount(playerCount)
     .WithInputDelayFrames(2)
     .WithLogLevel(LogLevel.Information)
@@ -43,13 +96,16 @@ var builder = RollbackNetcode
     });
 
 // parse console arguments checking if it is a spectator
-if (endpoints is ["spectate", { } hostArg] && IPEndPoint.TryParse(hostArg, out var host))
+if (endpoints is ["spectate", { } hostArg] && ulong.TryParse(hostArg, out var host))
 {
+    var identity = new SteamNetworkingIdentity();
+    identity.SetSteamID64(host);
+
     builder
         .WithFileLogWriter($"log_spectator_{port}.log", append: false)
         .ConfigureSpectator(options =>
         {
-            options.HostEndPoint = host;
+            options.HostEndPoint = new(identity, Channel);
         });
 }
 // not a spectator, creating a `remote` game session
@@ -93,7 +149,20 @@ session.Dispose();
 await session.WaitToStop();
 Console.Clear();
 
-return;
+// Stop the callback loop task
+try
+{
+    await cancelTokenSrc.CancelAsync();
+    await callbackRunner;
+}
+catch (TaskCanceledException)
+{
+    Console.WriteLine("Callback loop task stopped!");
+}
+
+SteamAPI.Shutdown();
+
+return 0;
 
 static NetcodePlayer[] ParsePlayers(IEnumerable<string> endpoints)
 {
@@ -110,15 +179,23 @@ static NetcodePlayer ParsePlayer(string address)
     if (address.Equals("local", StringComparison.OrdinalIgnoreCase))
         return NetcodePlayer.CreateLocal();
 
+    ulong steamId;
+
     if (address.StartsWith("s:", StringComparison.OrdinalIgnoreCase))
-        if (IPEndPoint.TryParse(address[2..], out var hostEndPoint))
-            return NetcodePlayer.CreateSpectator(hostEndPoint);
+        if (ulong.TryParse(address[2..], out steamId))
+        {
+            SteamNetworkingIdentity identity = default;
+            identity.SetSteamID64(steamId);
+            return NetcodePlayer.CreateSpectator(new SteamEndPoint(identity, Channel));
+        }
         else
             throw new InvalidOperationException("Invalid spectator endpoint");
 
-    if (IPEndPoint.TryParse(address, out var endPoint))
+    if (ulong.TryParse(address, out steamId))
     {
-        return NetcodePlayer.CreateRemote(endPoint);
+        SteamNetworkingIdentity identity = default;
+        identity.SetSteamID64(steamId);
+        return NetcodePlayer.CreateRemote(new(identity, Channel));
     }
 
     throw new InvalidOperationException($"Invalid player argument: {address}");

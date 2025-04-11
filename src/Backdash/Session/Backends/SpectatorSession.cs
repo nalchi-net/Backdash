@@ -1,7 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using Backdash.Core;
 using Backdash.Network;
 using Backdash.Network.Client;
@@ -24,7 +23,7 @@ sealed class SpectatorSession<TInput> :
 {
     readonly Logger logger;
     readonly IProtocolPeerClient udp;
-    readonly IPEndPoint hostEndpoint;
+    readonly SteamEndPoint hostEndpoint;
     readonly NetcodeOptions options;
     readonly IBackgroundJobManager backgroundJobManager;
     readonly ConnectionsState localConnections = new(0);
@@ -54,8 +53,6 @@ sealed class SpectatorSession<TInput> :
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(spectatorOptions);
-        ArgumentNullException.ThrowIfNull(spectatorOptions.HostAddress);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.LocalPort);
 
         this.options = options;
         hostEndpoint = spectatorOptions.HostEndPoint;
@@ -139,14 +136,14 @@ sealed class SpectatorSession<TInput> :
         return ResultCode.NotSupported;
     }
 
-    public ResultCode AddRemotePlayer(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddRemotePlayer(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;
     }
 
 #pragma warning disable S4144
-    public ResultCode AddSpectator(IPEndPoint endpoint, out PlayerHandle handle)
+    public ResultCode AddSpectator(SteamEndPoint endpoint, out PlayerHandle handle)
     {
         handle = default;
         return ResultCode.NotSupported;
@@ -190,7 +187,7 @@ sealed class SpectatorSession<TInput> :
     public void Start(CancellationToken stoppingToken = default)
     {
         backgroundJobTask = backgroundJobManager.Start(stoppingToken);
-        logger.Write(LogLevel.Information, $"Spectating started on host {hostEndpoint}");
+        logger.Write(LogLevel.Information, $"Spectating started on host {hostEndpoint.ToString()}");
     }
 
     public async Task WaitToStop(CancellationToken stoppingToken = default)

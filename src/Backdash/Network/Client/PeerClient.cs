@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading.Channels;
 using Backdash.Core;
 using Backdash.Serialization;
+using GnsSharp;
 
 namespace Backdash.Network.Client;
 
@@ -187,7 +188,11 @@ sealed class PeerClient<T> : IPeerJobClient<T> where T : struct
     async Task StartReceiving(CancellationToken cancellationToken)
     {
         var buffer = Mem.AllocatePinnedArray(maxPacketSize);
-        SocketAddress address = new(socket.AddressFamily);
+        SocketAddress address;
+        unsafe
+        {
+            address = new(socket.AddressFamily, sizeof(SteamNetworkingIdentity));
+        }
         T msg = default;
         while (!cancellationToken.IsCancellationRequested)
         {
