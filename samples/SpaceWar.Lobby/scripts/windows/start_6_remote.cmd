@@ -1,5 +1,5 @@
 dotnet build -c Release %~dp0\..\..
-pushd %~dp0\..\..\bin\Release\net8.0
+pushd %~dp0\..\..\bin\Release\net9.0
 del *.log
 @set LOBBY_SERVER_URL=https://lobby-server.fly.dev
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 source "$(dirname "$0")/build_server.sh"
-pushd "$(dirname "$0")/../../bin/Release/net8.0" || exit
+pushd "$(dirname "$0")/../../bin/Release/net9.0" || exit
 rm ./*.log
 
 dotnet SpaceWar.dll -ServerURl "$LOBBY_SERVER_URL" -Username player -LocalPort 9000 &

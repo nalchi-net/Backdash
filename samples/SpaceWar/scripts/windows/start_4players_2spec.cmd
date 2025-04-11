@@ -1,5 +1,5 @@
 dotnet build -c Release %~dp0\..\..
-pushd %~dp0\..\..\bin\Release\net8.0
+pushd %~dp0\..\..\bin\Release\net9.0
 del *.log
 start SpaceWar 9000 4 local 127.0.0.1:9001 127.0.0.1:9002 127.0.0.1:9003 s:127.0.0.1:9100
 start SpaceWar 9001 4 127.0.0.1:9000 local 127.0.0.1:9002 127.0.0.1:9003 s:127.0.0.1:9101
