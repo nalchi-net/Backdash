@@ -341,8 +341,7 @@ sealed class PeerConnection<TInput> : IDisposable where TInput : unmanaged
     {
         const int udpHeaderSize = 8;
         const int ipAddressHeaderSize = 20;
-        const int steamHeaderSize = 20; // Rough estimate
-        const int totalHeaderSize = udpHeaderSize + ipAddressHeaderSize + steamHeaderSize;
+        const int totalHeaderSize = udpHeaderSize + ipAddressHeaderSize;
         if (state.CurrentStatus is not ProtocolStatus.Running)
             return;
         var elapsed = Stopwatch.GetElapsedTime(startedAt);
