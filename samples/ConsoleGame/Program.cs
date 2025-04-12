@@ -84,12 +84,11 @@ var builder = RollbackNetcode
         // options.DisconnectTimeoutEnabled = false;
     });
 
-// parse console arguments checking if it is a spectator
-if (endpoints is ["spectate", { } hostArg] && ulong.TryParse(hostArg, out var host))
-{
-    var identity = new SteamNetworkingIdentity();
-    identity.SetSteamID64(host);
+SteamNetworkingIdentity identity = default;
 
+// parse console arguments checking if it is a spectator
+if (endpoints is ["spectate", { } hostArg] && identity.ParseString(hostArg))
+{
     builder
         .WithFileLogWriter($"log_spectator_{port}.log", append: false)
         .ConfigureSpectator(options =>
@@ -168,22 +167,18 @@ static NetcodePlayer ParsePlayer(string address)
     if (address.Equals("local", StringComparison.OrdinalIgnoreCase))
         return NetcodePlayer.CreateLocal();
 
-    ulong steamId;
+    SteamNetworkingIdentity identity = default;
 
     if (address.StartsWith("s:", StringComparison.OrdinalIgnoreCase))
-        if (ulong.TryParse(address[2..], out steamId))
+        if (identity.ParseString(address[2..]))
         {
-            SteamNetworkingIdentity identity = default;
-            identity.SetSteamID64(steamId);
             return NetcodePlayer.CreateSpectator(new SteamEndPoint(identity, Channel));
         }
         else
             throw new InvalidOperationException("Invalid spectator endpoint");
 
-    if (ulong.TryParse(address, out steamId))
+    if (identity.ParseString(address))
     {
-        SteamNetworkingIdentity identity = default;
-        identity.SetSteamID64(steamId);
         return NetcodePlayer.CreateRemote(new(identity, Channel));
     }
 
