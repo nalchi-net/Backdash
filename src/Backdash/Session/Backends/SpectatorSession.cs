@@ -216,7 +216,11 @@ sealed class SpectatorSession<TInput> :
         unsafe
         {
             IntPtr callbackPtr;
+#if BACKDASH_STEAMWORKS_64
             ulong callbackPtrSize = (ulong)sizeof(IntPtr);
+#elif BACKDASH_STEAMWORKS_32
+            uint callbackPtrSize = (uint)sizeof(IntPtr);
+#endif
             Span<byte> callbackPtrSpan = new Span<byte>(&callbackPtr, (int)callbackPtrSize);
 
             var getConfigResult = ISteamNetworkingUtils.User.GetConfigValue(ESteamNetworkingConfigValue.Callback_MessagesSessionRequest, ESteamNetworkingConfigScope.Global, IntPtr.Zero, callbackPtrSpan, ref callbackPtrSize);

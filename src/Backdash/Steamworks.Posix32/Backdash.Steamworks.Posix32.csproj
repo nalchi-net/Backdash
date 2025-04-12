@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Backdash.props"/>
+
+  <ItemGroup>
+    <PackageReference Include="GnsSharp.Steamworks.Posix32" Version="$(GnsSharpVersion)"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);BACKDASH_STEAMWORKS_32</DefineConstants>
+  </PropertyGroup>
+</Project>

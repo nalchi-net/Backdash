@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -6,6 +6,22 @@
     <PackageId>Backdash</PackageId>
     <Description>Rollback netcode library</Description>
     <PackageTags>rollback, netcode, network, peer to peer, online, game, multiplayer</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../*.cs"/>
+    <Compile Include="../Core/**/*.cs"/>
+    <Compile Include="../Data/**/*.cs"/>
+    <Compile Include="../Network/**/*.cs"/>
+    <Compile Include="../Options/**/*.cs"/>
+    <Compile Include="../Player/**/*.cs"/>
+    <Compile Include="../Serialization/**/*.cs"/>
+    <Compile Include="../Session/**/*.cs"/>
+    <Compile Include="../Synchronizing/**/*.cs"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GnsSharpVersion>0.1.0-alpha.11</GnsSharpVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), '^(.*;)*AOT_ENABLED(;.*)*$'))">
@@ -18,9 +34,5 @@
     <InternalsVisibleTo Include="$(AssemblyName).Tests"/>
     <InternalsVisibleTo Include="$(AssemblyName).Benchmarks"/>
     <InternalsVisibleTo Include="$(AssemblyName).Benchmarks.Ping"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GnsSharp.Steamworks.Win64" Version="0.1.0-alpha.11"/>
   </ItemGroup>
 </Project>

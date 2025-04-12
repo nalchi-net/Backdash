@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "_build\_build.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{53EC6C8F-493B-4116-85D1-0AA416FF59DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash", "src\Backdash\Backdash.csproj", "{ACA10360-5A71-4D34-8497-F93AFC7513FC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{59B7ED54-BE47-4A60-A4BB-532AAE6BE6AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Tests", "tests\Backdash.Tests\Backdash.Tests.csproj", "{F578F51B-2E4C-4421-A40B-342C4DFFBD66}"
@@ -13,6 +11,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Utils", "src\Backdash.Utils\Backdash.Utils.csproj", "{BA97CA2F-E2BB-40FE-9911-FCBD620A8D96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Analyzers", "src\Backdash.Analyzers\Backdash.Analyzers.csproj", "{FD3F38F9-3D7B-4D8E-ABE7-81A78D6309BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Steamworks.Win64", "src\Backdash\Steamworks.Win64\Backdash.Steamworks.Win64.csproj", "{ACA10360-5A71-4D34-8497-F93AFC7513FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Steamworks.Win32", "src\Backdash\Steamworks.Win32\Backdash.Steamworks.Win32.csproj", "{4B426BDA-6DEB-A131-C764-F21C3F386E4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Steamworks.Posix64", "src\Backdash\Steamworks.Posix64\Backdash.Steamworks.Posix64.csproj", "{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.Steamworks.Posix32", "src\Backdash\Steamworks.Posix32\Backdash.Steamworks.Posix32.csproj", "{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,11 +44,29 @@ Global
 		{FD3F38F9-3D7B-4D8E-ABE7-81A78D6309BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD3F38F9-3D7B-4D8E-ABE7-81A78D6309BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD3F38F9-3D7B-4D8E-ABE7-81A78D6309BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B426BDA-6DEB-A131-C764-F21C3F386E4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B426BDA-6DEB-A131-C764-F21C3F386E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B426BDA-6DEB-A131-C764-F21C3F386E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B426BDA-6DEB-A131-C764-F21C3F386E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{ACA10360-5A71-4D34-8497-F93AFC7513FC} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
 		{F578F51B-2E4C-4421-A40B-342C4DFFBD66} = {59B7ED54-BE47-4A60-A4BB-532AAE6BE6AE}
 		{BA97CA2F-E2BB-40FE-9911-FCBD620A8D96} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
 		{FD3F38F9-3D7B-4D8E-ABE7-81A78D6309BA} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
+		{E4F3684F-F99A-F4DE-F5BC-66F65F3F3438} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
+		{4B426BDA-6DEB-A131-C764-F21C3F386E4B} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
+		{21708CDE-1CF3-D38F-19C8-B71FC5C6CA2C} = {53EC6C8F-493B-4116-85D1-0AA416FF59DE}
 	EndGlobalSection
 EndGlobal
