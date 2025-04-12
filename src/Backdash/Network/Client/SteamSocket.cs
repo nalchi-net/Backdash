@@ -103,7 +103,7 @@ public sealed class SteamSocket : IPeerSocket
     {
         ref SteamNetworkingIdentity identity = ref socketAddress.AsSteamNetworkingIdentity();
 
-        EResult result = steamNetMsgs.SendMessageToUser(identity, buffer.Span, ESteamNetworkingSendType.UnreliableNoNagle, Port);
+        EResult result = steamNetMsgs.SendMessageToUser(identity, buffer.Span, ESteamNetworkingSendType.UnreliableNoNagle | ESteamNetworkingSendType.AutoRestartBrokenSession, Port);
 
         if (result != EResult.OK)
             return ValueTask.FromException<int>(new GnsEResultException(result));
