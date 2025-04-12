@@ -17,17 +17,6 @@ if (SteamAPI.InitEx(out string? errMsg) != ESteamAPIInitResult.OK)
     return 1;
 }
 
-FnSteamNetworkingMessagesSessionRequest reqFunc = (ref SteamNetworkingMessagesSessionRequest_t req) =>
-{
-    ISteamNetworkingMessages.User!.AcceptSessionWithUser(req.IdentityRemote);
-};
-
-if (!ISteamNetworkingUtils.User!.SetGlobalCallback_MessagesSessionRequest(reqFunc))
-{
-    Console.WriteLine("SetGlobalCallback_MessagesSessionRequest failed");
-    return 1;
-}
-
 // Run callbacks as a seperate task
 using CancellationTokenSource cancelTokenSrc = new();
 CancellationToken cancelToken = cancelTokenSrc.Token;

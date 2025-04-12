@@ -164,6 +164,7 @@ sealed class PeerConnection<TInput> : IDisposable where TInput : unmanaged
     public bool IsRunning => state.CurrentStatus is ProtocolStatus.Running;
 
     public PlayerHandle Player => state.Player;
+    public PeerAddress Address => state.PeerAddress;
 
     // require idle input should be a configuration parameter
     public int GetRecommendFrameDelay() => timeSync.RecommendFrameWaitDuration();
@@ -340,7 +341,8 @@ sealed class PeerConnection<TInput> : IDisposable where TInput : unmanaged
     {
         const int udpHeaderSize = 8;
         const int ipAddressHeaderSize = 20;
-        const int totalHeaderSize = udpHeaderSize + ipAddressHeaderSize;
+        const int steamHeaderSize = 20; // Rough estimate
+        const int totalHeaderSize = udpHeaderSize + ipAddressHeaderSize + steamHeaderSize;
         if (state.CurrentStatus is not ProtocolStatus.Running)
             return;
         var elapsed = Stopwatch.GetElapsedTime(startedAt);

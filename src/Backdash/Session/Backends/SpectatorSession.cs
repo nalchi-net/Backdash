@@ -12,6 +12,7 @@ using Backdash.Synchronizing.Input;
 using Backdash.Synchronizing.Input.Confirmed;
 using Backdash.Synchronizing.Random;
 using Backdash.Synchronizing.State;
+using GnsSharp;
 
 namespace Backdash.Backends;
 
@@ -31,6 +32,8 @@ sealed class SpectatorSession<TInput> :
     readonly PeerConnection<ConfirmedInputs<TInput>> host;
     readonly FrozenSet<PlayerHandle> fakePlayers;
     readonly IDeterministicRandom<TInput> random;
+
+    FnSteamNetworkingMessagesSessionRequest? steamNetMsgsSessionRequest;
 
     INetcodeSessionHandler callbacks;
     bool isSynchronizing;
@@ -107,6 +110,19 @@ sealed class SpectatorSession<TInput> :
         closed = true;
         logger.Write(LogLevel.Information, "Shutting down connections");
         host.Dispose();
+
+        // Remove message session request callback
+        if (steamNetMsgsSessionRequest != null)
+        {
+            unsafe
+            {
+                delegate* unmanaged[Cdecl]<SteamNetworkingMessagesSessionRequest_t*, void> nullCallback = null;
+                ISteamNetworkingUtils.User!.SetGlobalCallback_MessagesSessionRequest(nullCallback);
+            }
+
+            steamNetMsgsSessionRequest = null;
+        }
+
         callbacks.OnSessionClose();
     }
 
@@ -186,6 +202,35 @@ sealed class SpectatorSession<TInput> :
 
     public void Start(CancellationToken stoppingToken = default)
     {
+        if (ISteamNetworkingUtils.User == null)
+            throw new InvalidOperationException("ISteamNetworkingUtils.User is null. Call SteamAPI.Init() or SteamAPI.InitEx() beforehand.");
+        if (ISteamNetworkingMessages.User == null)
+            throw new InvalidOperationException("ISteamNetworkingMessages.User is null. Call SteamAPI.Init() or SteamAPI.InitEx() beforehand.");
+
+        // Check if there's already a MessagesSessionRequest callback registered.
+        // In that case, you shouldn't overwrite it.
+        unsafe
+        {
+            IntPtr callbackPtr;
+            ulong callbackPtrSize = (ulong)sizeof(IntPtr);
+            Span<byte> callbackPtrSpan = new Span<byte>(&callbackPtr, (int)callbackPtrSize);
+
+            var getConfigResult = ISteamNetworkingUtils.User.GetConfigValue(ESteamNetworkingConfigValue.Callback_MessagesSessionRequest, ESteamNetworkingConfigScope.Global, IntPtr.Zero, callbackPtrSpan, ref callbackPtrSize);
+            Debug.Assert(getConfigResult == ESteamNetworkingGetConfigValueResult.OK || getConfigResult == ESteamNetworkingGetConfigValueResult.OKInherited, $"GetConfigValue failed with {getConfigResult}");
+
+            if (callbackPtr != IntPtr.Zero)
+                throw new InvalidOperationException("There was already MessagesSessionRequest callback registered.");
+        }
+
+        // Register MessageSessionRequest callback for this session.
+        steamNetMsgsSessionRequest = (ref SteamNetworkingMessagesSessionRequest_t req) =>
+        {
+            // Accept the messages session if it's the host
+            if (req.IdentityRemote == host.Address.EndPoint.Identity)
+                ISteamNetworkingMessages.User.AcceptSessionWithUser(req.IdentityRemote);
+        };
+        ISteamNetworkingUtils.User.SetGlobalCallback_MessagesSessionRequest(steamNetMsgsSessionRequest);
+
         backgroundJobTask = backgroundJobManager.Start(stoppingToken);
         logger.Write(LogLevel.Information, $"Spectating started on host {hostEndpoint.ToString()}");
     }
