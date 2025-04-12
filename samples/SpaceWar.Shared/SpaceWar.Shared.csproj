@@ -13,7 +13,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Backdash\Backdash.csproj"/>
+    <ProjectReference Include="..\..\src\Backdash\Steamworks.Win64\Backdash.Steamworks.Win64.csproj"/>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High"/>

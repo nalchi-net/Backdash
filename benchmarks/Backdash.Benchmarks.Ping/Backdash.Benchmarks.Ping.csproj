@@ -7,6 +7,6 @@
         <NoWarn>CS1591,S125,S1199,CS016,S1144,S3903,CS159,S1104</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Backdash\Backdash.csproj" />
+      <ProjectReference Include="..\..\src\Backdash\Steamworks.Win64\Backdash.Steamworks.Win64.csproj" />
     </ItemGroup>
 </Project>

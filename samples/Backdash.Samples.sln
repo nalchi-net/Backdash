@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "..\src", "{53EC6C8F-493B-4116-85D1-0AA416FF59DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash", "..\src\Backdash\Backdash.csproj", "{ACA10360-5A71-4D34-8497-F93AFC7513FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash", "..\src\Backdash\Steamworks.Win64\Backdash.Steamworks.Win64.csproj", "{ACA10360-5A71-4D34-8497-F93AFC7513FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", ".\", "{52082A6A-CF3A-4792-8218-7A8ECD119CDB}"
 EndProject
