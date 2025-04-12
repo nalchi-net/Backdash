@@ -109,7 +109,6 @@ sealed class SpectatorSession<TInput> :
         if (closed) return;
         closed = true;
         logger.Write(LogLevel.Information, "Shutting down connections");
-        host.Dispose();
 
         // Remove message session request callback
         if (steamNetMsgsSessionRequest != null)
@@ -122,6 +121,11 @@ sealed class SpectatorSession<TInput> :
 
             steamNetMsgsSessionRequest = null;
         }
+
+        // Close underlying Steam Networking Messages session
+        ISteamNetworkingMessages.User?.CloseSessionWithUser(host.Address.EndPoint.Identity);
+
+        host.Dispose();
 
         callbacks.OnSessionClose();
     }

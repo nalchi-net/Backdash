@@ -133,11 +133,6 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
 
         logger.Write(LogLevel.Information, "Shutting down connections");
 
-        foreach (var endpoint in endpoints)
-            endpoint?.Dispose();
-
-        foreach (var spectator in spectators)
-            spectator.Dispose();
 
         // Remove message session request callback
         if (steamNetMsgsSessionRequest != null)
@@ -149,6 +144,28 @@ sealed class RemoteSession<TInput> : INetcodeSession<TInput>, IProtocolNetworkEv
             }
 
             steamNetMsgsSessionRequest = null;
+        }
+
+        foreach (var endpoint in endpoints)
+        {
+            if (endpoint != null)
+            {
+                // Close underlying Steam Networking Messages session
+                ISteamNetworkingMessages.User?.CloseSessionWithUser(endpoint.Address.EndPoint.Identity);
+
+                endpoint.Dispose();
+            }
+        }
+
+        foreach (var spectator in spectators)
+        {
+            if (spectator != null)
+            {
+                // Close underlying Steam Networking Messages session
+                ISteamNetworkingMessages.User?.CloseSessionWithUser(spectator.Address.EndPoint.Identity);
+
+                spectator.Dispose();
+            }
         }
 
         callbacks.OnSessionClose();
