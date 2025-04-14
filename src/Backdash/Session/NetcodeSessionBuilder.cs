@@ -190,12 +190,36 @@ public sealed class NetcodeSessionBuilder<TInput> where TInput : unmanaged
         return this;
     }
 
+    /// <inheritdoc cref="NetcodeOptions.FrameRate" />
+    public NetcodeSessionBuilder<TInput> WithFrameRate(int fps)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(fps);
+        options.FrameRate = fps;
+
+        return this;
+    }
+
     /// <inheritdoc cref="NetcodeOptions.LocalPort" />
     public NetcodeSessionBuilder<TInput> WithPort(int port)
     {
         options.LocalPort = port;
         return this;
     }
+
+    /// <inheritdoc cref="NetcodeOptions.SaveStateCount" />
+    public NetcodeSessionBuilder<TInput> WithSaveStateCount(int count)
+    {
+        options.SaveStateCount = count;
+        return this;
+    }
+
+    /// <inheritdoc cref="NetcodeOptions.UseBackgroundThread" />
+    public NetcodeSessionBuilder<TInput> UseBackgroundThread(bool enabled = true)
+    {
+        options.UseBackgroundThread = enabled;
+        return this;
+    }
+
 
     /// <summary>
     ///     Select the input serialization <see cref="Endianness" />

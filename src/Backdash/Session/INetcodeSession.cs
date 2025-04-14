@@ -22,6 +22,11 @@ public interface INetcodeSessionInfo
     int NumberOfSpectators { get; }
 
     /// <summary>
+    ///     Returns the configured frame rate.
+    /// </summary>
+    int FixedFrameRate { get; }
+
+    /// <summary>
     ///     Returns the current session <see cref="Frame" />.
     /// </summary>
     Frame CurrentFrame { get; }
@@ -105,7 +110,10 @@ public interface INetcodeSession : INetcodeSessionInfo, IDisposable
     ///     Load state for saved <paramref name="frame" />.
     /// </summary>
     /// <returns>true if succeeded.</returns>
-    bool LoadFrame(in Frame frame);
+    bool LoadFrame(Frame frame);
+
+    ///     <inheritdoc cref="LoadFrame(Backdash.Frame)"/>
+    bool LoadFrame(int frame) => LoadFrame(new Frame(frame));
 
     /// <summary>
     ///     Try to get the session <see cref="SessionReplayControl" />

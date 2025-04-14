@@ -67,22 +67,26 @@ public sealed record NetcodeOptions
 
     /// <summary>
     ///     Value to be incremented on <see cref="PredictionFrames" /> in state store.
-    ///     <see cref="IStateStore.Initialize" />
     /// </summary>
     /// <value>Defaults to <c>2</c></value>
+    /// <seealso cref="IStateStore.Initialize" />
     /// <seealso cref="IStateStore" />
     public int PredictionFramesOffset { get; set; } = 2;
-
-    /// <summary>
-    ///     Total allowed prediction frames.
-    /// </summary>
-    internal int TotalPredictionFrames => PredictionFrames + PredictionFramesOffset;
 
     /// <summary>
     ///     Amount of frames to delay local input.
     /// </summary>
     /// <value>Defaults to <c>2</c></value>
     public int InputDelayFrames { get; set; } = 2;
+
+    /// <summary>
+    ///     Value to override the total number of <see cref="SavedFrame" /> in state store.
+    /// </summary>
+    /// <value>Defaults to <see cref="PredictionFrames" /> + <see cref="PredictionFramesOffset"/></value>
+    /// <seealso cref="IStateStore" />
+    public int SaveStateCount { get; set; }
+
+    internal int TotalSavedFramesAllowed => Math.Max(PredictionFrames + PredictionFramesOffset, SaveStateCount);
 
     /// <summary>
     ///     Size hint in bytes for state serialization pre-allocation.
@@ -97,10 +101,11 @@ public sealed record NetcodeOptions
     public bool UseIPv6 { get; set; }
 
     /// <summary>
-    ///     Base FPS used to estimate fairness (frame advantage) over peers.
+    ///     Base frame rate used to estimate fairness (frame advantage) over peers.
+    ///     <inheritdoc cref="FrameTime.DefaultFrameRate" />
     /// </summary>
-    /// <inheritdoc cref="FrameSpan.DefaultFramesPerSecond" />
-    public short FramesPerSecond { get; set; } = FrameSpan.DefaultFramesPerSecond;
+    /// <seealso cref="FrameTime"/>
+    public int FrameRate { get; set; } = FrameTime.DefaultFrameRate;
 
     /// <summary>Time synchronization options.</summary>
     /// <seealso cref="TimeSyncOptions" />
@@ -113,6 +118,10 @@ public sealed record NetcodeOptions
     /// <summary>Networking Protocol options.</summary>
     /// <seealso cref="ProtocolOptions" />
     public ProtocolOptions Protocol { get; set; } = new();
+
+    /// <summary>Run jobs in a separated thread.</summary>
+    /// <value>Defaults to <c>true</c></value>
+    public bool UseBackgroundThread { get; set; } = true;
 
     internal void EnsureDefaults()
     {

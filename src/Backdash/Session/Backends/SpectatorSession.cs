@@ -47,6 +47,8 @@ sealed class SpectatorSession<TInput> :
     readonly IChecksumProvider checksumProvider;
     readonly Endianness endianness;
 
+    public int FixedFrameRate { get; }
+
     public SpectatorSession(
         SpectatorOptions spectatorOptions,
         NetcodeOptions options,
@@ -56,8 +58,12 @@ sealed class SpectatorSession<TInput> :
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(spectatorOptions);
+        ArgumentNullException.ThrowIfNull(spectatorOptions.HostAddress);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.LocalPort);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(options.FrameRate);
 
         this.options = options;
+        FixedFrameRate = this.options.FrameRate;
         hostEndpoint = spectatorOptions.HostEndPoint;
         backgroundJobManager = services.JobManager;
         random = services.DeterministicRandom;
@@ -88,7 +94,7 @@ sealed class SpectatorSession<TInput> :
 
         var inputGroupComparer = ConfirmedInputComparer<TInput>.Create(services.InputComparer);
         host = peerConnectionFactory.Create(protocolState, inputGroupSerializer, this, inputGroupComparer);
-        stateStore.Initialize(options.TotalPredictionFrames);
+        stateStore.Initialize(options.TotalSavedFramesAllowed);
         peerObservers.Add(host.GetUdpObserver());
         isSynchronizing = true;
         host.Synchronize();
@@ -239,7 +245,7 @@ sealed class SpectatorSession<TInput> :
         };
         ISteamNetworkingUtils.User.SetGlobalCallback_MessagesSessionRequest(steamNetMsgsSessionRequest);
 
-        backgroundJobTask = backgroundJobManager.Start(stoppingToken);
+        backgroundJobTask = backgroundJobManager.Start(options.UseBackgroundThread, stoppingToken);
         logger.Write(LogLevel.Information, $"Spectating started on host {hostEndpoint.ToString()}");
     }
 
@@ -356,29 +362,27 @@ sealed class SpectatorSession<TInput> :
         logger.Write(LogLevel.Trace, $"spectator: saved frame {nextState.Frame} (checksum: {nextState.Checksum:x8}).");
     }
 
-    public bool LoadFrame(in Frame frame)
+    public bool LoadFrame(Frame frame)
     {
-        if (frame.IsNull || frame == CurrentFrame)
+        frame = Frame.Max(in frame, in Frame.Zero);
+
+        if (frame.Number == CurrentFrame.Number)
         {
             logger.Write(LogLevel.Trace, "Skipping NOP.");
             return true;
         }
 
-        try
-        {
-            var savedFrame = stateStore.Load(in frame);
-            logger.Write(LogLevel.Trace,
-                $"Loading replay frame {savedFrame.Frame} (checksum: {savedFrame.Checksum:x8})");
-            var offset = 0;
-            BinaryBufferReader reader = new(savedFrame.GameState.WrittenSpan, ref offset, endianness);
-            callbacks.LoadState(in frame, in reader);
-            CurrentFrame = savedFrame.Frame;
-            return true;
-        }
-        catch (NetcodeException)
-        {
+        if (!stateStore.TryLoad(in frame, out var savedFrame))
             return false;
-        }
+
+        logger.Write(LogLevel.Trace,
+            $"Loading replay frame {savedFrame.Frame} (checksum: {savedFrame.Checksum:x8})");
+
+        var offset = 0;
+        BinaryBufferReader reader = new(savedFrame.GameState.WrittenSpan, ref offset, endianness);
+        callbacks.LoadState(in frame, in reader);
+        CurrentFrame = savedFrame.Frame;
+        return true;
     }
 
     bool IProtocolInputEventPublisher<ConfirmedInputs<TInput>>.Publish(in GameInputEvent<ConfirmedInputs<TInput>> evt)
@@ -386,7 +390,7 @@ sealed class SpectatorSession<TInput> :
         lastReceivedInputTime = Stopwatch.GetTimestamp();
         var (_, input) = evt;
         inputs[input.Frame.Number % inputs.Length] = input;
-        host.SetLocalFrameNumber(input.Frame, options.FramesPerSecond);
+        host.SetLocalFrameNumber(input.Frame, FixedFrameRate);
         return host.SendInputAck();
     }
 }
