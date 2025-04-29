@@ -1,3 +1,5 @@
+# This `old-steamworks-integration` branch is DEPRECATED!<br/>See [`Backdash.Gns` repo](https://github.com/nalchi-net/Backdash.Gns) instead.
+
 [![Nuget](https://img.shields.io/nuget/v/Backdash.svg?style=flat)](https://www.nuget.org/packages/Backdash)
 ![](https://raw.githubusercontent.com/lucasteles/Backdash/site/dotnet_version_badge.svg)
 ![https://editorconfig.org/](https://img.shields.io/badge/style-EditorConfig-black)
